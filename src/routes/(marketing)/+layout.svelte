@@ -3,16 +3,28 @@
   import "../../app.css"
   import { onMount } from "svelte"
   import { fly, fade } from "svelte/transition"
+  import { page } from "$app/stores"
 
   interface Props {
     children?: import("svelte").Snippet
+    data?: any
   }
 
-  let { children }: Props = $props()
+  let { children, data }: Props = $props()
   let scrollY = 0
   let innerHeight = 0
   let scrolled = false
   let menuOpen = false
+
+  // Check if user is logged in
+  const isLoggedIn = $derived(
+    $page.data?.session !== null && $page.data?.session !== undefined,
+  )
+
+  // Get user initial if available
+  const userInitial = $derived(
+    $page.data?.user?.email?.[0]?.toUpperCase() || "U",
+  )
 
   onMount(() => {
     const handleScroll = () => {
@@ -44,7 +56,7 @@
     : 'py-4'}"
   style="backdrop-filter: blur(8px)"
 >
-  <div class="container mx-auto px-4">
+  <div class="container mx-auto px-4 flex items-center justify-between">
     <div class="flex-1">
       <a
         class="text-2xl font-bold text-[#1e3a6e] transition-all duration-300 hover:text-[#4a7fb9]"
@@ -54,9 +66,9 @@
         Ivy Honor
       </a>
     </div>
-    <div class="flex-none">
+    <div class="flex items-center">
       <ul
-        class="menu menu-horizontal px-1 hidden lg:flex font-medium text-base"
+        class="menu menu-horizontal px-1 hidden lg:flex font-medium text-base items-center"
       >
         <li class="mx-2">
           <a
@@ -68,20 +80,50 @@
         </li>
         <li class="mx-2">
           <a
-            href="/login"
-            class="hover:text-[#4a7fb9] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#4a7fb9] after:transition-all hover:after:w-full"
-          >
-            Login
-          </a>
-        </li>
-        <li class="ml-4">
-          <a
             href="#schedule"
-            class="bg-[#1e3a6e] hover:bg-[#152a51] text-white px-5 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            class="hover:text-[#4a7fb9] transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-[#4a7fb9] after:transition-all hover:after:w-full"
           >
             Schedule Consultation
           </a>
         </li>
+        {#if isLoggedIn}
+          <li class="ml-4">
+            <a
+              href="/account"
+              class="flex items-center gap-2 hover:text-[#4a7fb9] transition-colors duration-300"
+            >
+              <div
+                class="w-9 h-9 bg-[#1e3a6e] rounded-full flex items-center justify-center shadow-sm"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="text-white"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <span>My Account</span>
+            </a>
+          </li>
+        {:else}
+          <li class="ml-4">
+            <a
+              href="/login"
+              class="bg-[#1e3a6e] hover:bg-[#152a51] text-white px-5 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            >
+              Login
+            </a>
+          </li>
+        {/if}
       </ul>
 
       <!-- Mobile menu button -->
@@ -157,22 +199,53 @@
       </li>
       <li>
         <a
-          href="/login"
-          class="block py-2 text-lg hover:text-[#4a7fb9] transition-colors duration-300"
-          on:click={closeMenu}
-        >
-          Login
-        </a>
-      </li>
-      <li class="mt-6">
-        <a
           href="#schedule"
-          class="inline-block bg-[#1e3a6e] text-white px-5 py-3 rounded-md w-full text-center font-medium"
+          class="block py-2 text-lg hover:text-[#4a7fb9] transition-colors duration-300"
           on:click={closeMenu}
         >
           Schedule Consultation
         </a>
       </li>
+      {#if isLoggedIn}
+        <li>
+          <a
+            href="/account"
+            class="block py-2 text-lg hover:text-[#4a7fb9] transition-colors duration-300 flex items-center gap-2"
+            on:click={closeMenu}
+          >
+            <div
+              class="w-9 h-9 bg-[#1e3a6e] rounded-full flex items-center justify-center shadow-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-white"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <span>My Account</span>
+          </a>
+        </li>
+      {:else}
+        <li class="mt-6">
+          <a
+            href="/login"
+            class="inline-block bg-[#1e3a6e] text-white px-5 py-3 rounded-md w-full text-center font-medium"
+            on:click={closeMenu}
+          >
+            Login
+          </a>
+        </li>
+      {/if}
     </ul>
   </div>
 {/if}
