@@ -116,6 +116,52 @@
       </li>
       <li>
         <a
+          href="/account/information"
+          class={adminSection === "information" ? "active" : ""}
+          onclick={closeDrawer}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Information
+        </a>
+      </li>
+      <li>
+        <a
+          href="/account/ai-counselor"
+          class={adminSection === "ai-counselor" ? "active" : ""}
+          onclick={closeDrawer}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714a2.25 2.25 0 001.5 2.25m0 0v5.714a2.25 2.25 0 01-1.5 2.25m0 0a24.301 24.301 0 01-4.5 0m0 0v-5.714a2.25 2.25 0 001.5-2.25m0 0V3.104m0 0a24.301 24.301 0 00-4.5 0"
+            />
+          </svg>
+          AI Counselor
+        </a>
+      </li>
+      <li>
+        <a
           href="/account/billing"
           class={adminSection === "billing" ? "active" : ""}
           onclick={closeDrawer}

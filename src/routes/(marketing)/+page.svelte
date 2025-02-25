@@ -355,10 +355,12 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">
-        <div class="animate-on-scroll animate-delay-200">
-          <div class="bg-white p-8 rounded-lg shadow-md">
+        <div class="animate-on-scroll animate-delay-200 h-full flex">
+          <div
+            class="bg-white p-8 rounded-lg shadow-md h-full flex flex-col min-h-[200px]"
+          >
             <div
-              class="w-14 h-14 bg-[#1e3a6e]/10 rounded-full flex items-center justify-center mb-6"
+              class="w-14 h-14 bg-[#1e3a6e]/10 rounded-full flex items-center justify-center mb-6 flex-shrink-0"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -377,7 +379,7 @@
             <h3 class="text-xl font-bold text-[#1e3a6e] mb-4">
               Proven Track Record
             </h3>
-            <p class="text-gray-700 leading-relaxed">
+            <p class="text-gray-700 leading-relaxed flex-grow">
               Our proven track record speaks for itself—over 30 students placed
               at Harvard, Stanford, Princeton, and other elite institutions in
               the past three years alone.
@@ -385,10 +387,12 @@
           </div>
         </div>
 
-        <div class="animate-on-scroll animate-delay-400">
-          <div class="bg-white p-8 rounded-lg shadow-md">
+        <div class="animate-on-scroll animate-delay-400 h-full flex">
+          <div
+            class="bg-white p-8 rounded-lg shadow-md h-full flex flex-col min-h-[200px]"
+          >
             <div
-              class="w-14 h-14 bg-[#1e3a6e]/10 rounded-full flex items-center justify-center mb-6"
+              class="w-14 h-14 bg-[#1e3a6e]/10 rounded-full flex items-center justify-center mb-6 flex-shrink-0"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -406,7 +410,7 @@
               </svg>
             </div>
             <h3 class="text-xl font-bold text-[#1e3a6e] mb-4">Why Choose Us</h3>
-            <p class="text-gray-700 leading-relaxed">
+            <p class="text-gray-700 leading-relaxed flex-grow">
               When only the best will do for your child's future, Ivy Honor
               delivers results where others simply cannot.
             </p>
