@@ -14,818 +14,714 @@
   adminSectionStore.set("information")
 
   // Define types for our data structure
-  type Grade =
-    | "A+"
-    | "A"
-    | "A-"
-    | "B+"
-    | "B"
-    | "B-"
-    | "C+"
-    | "C"
-    | "C-"
-    | "D+"
-    | "D"
-    | "D-"
-    | "F"
-    | ""
+  type GradeLevel =
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9"
+    | "10"
+    | "11"
+    | "12"
 
-  interface Class {
+  // Test Score interface
+  interface TestScore {
     id: string
     name: string
-    grade: Grade
-    includeInGPA: boolean
-    isWeighted: boolean
+    score: string
+    date: string
   }
 
-  interface Semester {
+  // Activity interface
+  interface Activity {
     id: string
     name: string
-    classes: Class[]
-    unweightedGPA: number
-    weightedGPA: number
+    title: string
+    startGrade: GradeLevel
+    endGrade: GradeLevel
+    hoursPerWeek: number
+    weeksPerYear: number
+    description: string
   }
 
-  interface Year {
-    id: string
-    name: string
-    semesters: Semester[]
-    yearGPA: {
-      unweighted: string
-      weighted: string
-    }
-  }
+  // Initialize data
+  let testScores: TestScore[] = []
+  let activities: Activity[] = []
 
-  // GPA calculation constants
-  const gradePoints: Record<Grade, number> = {
-    "A+": 4.0,
-    A: 4.0,
-    "A-": 3.7,
-    "B+": 3.3,
-    B: 3.0,
-    "B-": 2.7,
-    "C+": 2.3,
-    C: 2.0,
-    "C-": 1.7,
-    "D+": 1.3,
-    D: 1.0,
-    "D-": 0.7,
-    F: 0.0,
-    "": 0.0,
-  }
+  // For test score form
+  let showAddTestForm = false
+  let newTestScore: TestScore = createEmptyTestScore()
+  let editingTestScoreId: string | null = null
 
-  // Common class names for suggestions
-  const commonClasses = [
-    "English",
-    "Algebra I",
-    "Algebra II",
-    "Geometry",
-    "Pre-Calculus",
-    "Calculus",
-    "Biology",
-    "Chemistry",
-    "Physics",
-    "World History",
-    "U.S. History",
-    "Government",
-    "Economics",
-    "Spanish I",
-    "Spanish II",
-    "French I",
-    "French II",
-    "Physical Education",
-    "Computer Science",
-    "Art",
-    "Music",
+  // For activity form
+  let showAddActivityForm = false
+  let newActivity: Activity = createEmptyActivity()
+  let editingActivityId: string | null = null
+
+  // Grade level options for select
+  const gradeLevelOptions = [
+    { value: "1", label: "1st Grade" },
+    { value: "2", label: "2nd Grade" },
+    { value: "3", label: "3rd Grade" },
+    { value: "4", label: "4th Grade" },
+    { value: "5", label: "5th Grade" },
+    { value: "6", label: "6th Grade" },
+    { value: "7", label: "7th Grade" },
+    { value: "8", label: "8th Grade" },
+    { value: "9", label: "9th Grade" },
+    { value: "10", label: "10th Grade" },
+    { value: "11", label: "11th Grade" },
+    { value: "12", label: "12th Grade" },
   ]
 
-  // Initialize academic years data
-  let academicYears: Year[] = [
-    {
-      id: "year-9",
-      name: "9th Grade",
-      semesters: [
-        {
-          id: "year-9-sem-1",
-          name: "Fall Semester",
-          classes: generateInitialClasses("9-1"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-        {
-          id: "year-9-sem-2",
-          name: "Spring Semester",
-          classes: generateInitialClasses("9-2"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-      ],
-      yearGPA: { unweighted: "0.00", weighted: "0.00" },
-    },
-    {
-      id: "year-10",
-      name: "10th Grade",
-      semesters: [
-        {
-          id: "year-10-sem-1",
-          name: "Fall Semester",
-          classes: generateInitialClasses("10-1"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-        {
-          id: "year-10-sem-2",
-          name: "Spring Semester",
-          classes: generateInitialClasses("10-2"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-      ],
-      yearGPA: { unweighted: "0.00", weighted: "0.00" },
-    },
-    {
-      id: "year-11",
-      name: "11th Grade",
-      semesters: [
-        {
-          id: "year-11-sem-1",
-          name: "Fall Semester",
-          classes: generateInitialClasses("11-1"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-        {
-          id: "year-11-sem-2",
-          name: "Spring Semester",
-          classes: generateInitialClasses("11-2"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-      ],
-      yearGPA: { unweighted: "0.00", weighted: "0.00" },
-    },
-    {
-      id: "year-12",
-      name: "12th Grade",
-      semesters: [
-        {
-          id: "year-12-sem-1",
-          name: "Fall Semester",
-          classes: generateInitialClasses("12-1"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-        {
-          id: "year-12-sem-2",
-          name: "Spring Semester",
-          classes: generateInitialClasses("12-2"),
-          unweightedGPA: 0,
-          weightedGPA: 0,
-        },
-      ],
-      yearGPA: { unweighted: "0.00", weighted: "0.00" },
-    },
+  // Common test names
+  const commonTestNames = [
+    "SAT",
+    "ACT",
+    "PSAT",
+    "AP Biology",
+    "AP Chemistry",
+    "AP Physics",
+    "AP Calculus AB",
+    "AP Calculus BC",
+    "AP English Language",
+    "AP English Literature",
+    "AP U.S. History",
+    "AP World History",
+    "AP Computer Science",
+    "SAT Subject Test - Math",
+    "SAT Subject Test - Biology",
+    "SAT Subject Test - Chemistry",
+    "SAT Subject Test - Physics",
+    "SAT Subject Test - Literature",
+    "SAT Subject Test - U.S. History",
+    "SAT Subject Test - World History",
+    "IB Biology",
+    "IB Chemistry",
+    "IB Physics",
+    "IB Mathematics",
+    "IB English",
+    "IB History",
   ]
 
-  // Generate 5 empty classes for each semester (reduced from 7)
-  function generateInitialClasses(prefix: string): Class[] {
-    return Array.from({ length: 5 }, (_, i) => ({
-      id: `${prefix}-class-${i + 1}`,
-      name: "",
-      grade: "" as Grade,
-      includeInGPA: true,
-      isWeighted: false,
-    }))
-  }
-
-  // Calculate GPA for a semester
-  function calculateSemesterGPA(semester: Semester) {
-    const includedClasses = semester.classes.filter(
-      (c) => c.includeInGPA && c.name && c.grade,
-    )
-
-    if (includedClasses.length === 0) {
-      semester.unweightedGPA = 0
-      semester.weightedGPA = 0
-      return
-    }
-
-    // Calculate unweighted GPA
-    const totalUnweightedPoints = includedClasses.reduce(
-      (sum, c) => sum + gradePoints[c.grade],
-      0,
-    )
-    semester.unweightedGPA = totalUnweightedPoints / includedClasses.length
-
-    // Calculate weighted GPA
-    const totalWeightedPoints = includedClasses.reduce((sum, c) => {
-      const points = gradePoints[c.grade]
-      return sum + (c.isWeighted ? points + 1.0 : points)
-    }, 0)
-    semester.weightedGPA = totalWeightedPoints / includedClasses.length
-  }
-
-  // Calculate year GPA
-  function calculateYearGPA(year: Year) {
-    let totalUnweightedPoints = 0
-    let totalWeightedPoints = 0
-    let totalClasses = 0
-
-    year.semesters.forEach((semester) => {
-      const includedClasses = semester.classes.filter(
-        (c) => c.includeInGPA && c.name && c.grade,
-      )
-      totalClasses += includedClasses.length
-      totalUnweightedPoints += includedClasses.reduce(
-        (sum, c) => sum + gradePoints[c.grade],
-        0,
-      )
-      totalWeightedPoints += includedClasses.reduce((sum, c) => {
-        const points = gradePoints[c.grade]
-        return sum + (c.isWeighted ? points + 1.0 : points)
-      }, 0)
-    })
-
-    year.yearGPA = {
-      unweighted:
-        totalClasses > 0
-          ? (totalUnweightedPoints / totalClasses).toFixed(2)
-          : "0.00",
-      weighted:
-        totalClasses > 0
-          ? (totalWeightedPoints / totalClasses).toFixed(2)
-          : "0.00",
-    }
-  }
-
-  // Calculate GPA for all semesters and years
-  function calculateAllGPAs() {
-    academicYears.forEach((year) => {
-      year.semesters.forEach((semester) => {
-        calculateSemesterGPA(semester)
-      })
-      calculateYearGPA(year)
-    })
-    academicYears = [...academicYears] // Trigger reactivity
-  }
-
-  // Add a new class to a semester
-  function addClass(semesterId: string) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-
-    const newClass: Class = {
-      id: `${semesterId}-class-${
-        academicYears[yearIndex].semesters[semesterIndex].classes.length + 1
-      }`,
-      name: "",
-      grade: "" as Grade,
-      includeInGPA: true,
-      isWeighted: false,
-    }
-
-    academicYears[yearIndex].semesters[semesterIndex].classes.push(newClass)
-    academicYears = [...academicYears] // Trigger reactivity
-    calculateAllGPAs()
-  }
-
-  // Remove a class from a semester
-  function removeClass(semesterId: string, classId: string) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-
-    academicYears[yearIndex].semesters[semesterIndex].classes = academicYears[
-      yearIndex
-    ].semesters[semesterIndex].classes.filter((c) => c.id !== classId)
-
-    academicYears = [...academicYears] // Trigger reactivity
-    calculateAllGPAs()
-  }
-
-  // Toggle include in GPA
-  function toggleIncludeInGPA(semesterId: string, classId: string) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-    const classIndex = academicYears[yearIndex].semesters[
-      semesterIndex
-    ].classes.findIndex((c) => c.id === classId)
-
-    if (classIndex === -1) return
-
-    academicYears[yearIndex].semesters[semesterIndex].classes[
-      classIndex
-    ].includeInGPA =
-      !academicYears[yearIndex].semesters[semesterIndex].classes[classIndex]
-        .includeInGPA
-
-    academicYears = [...academicYears] // Trigger reactivity
-    calculateAllGPAs()
-  }
-
-  // Toggle weighted class
-  function toggleWeighted(semesterId: string, classId: string) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-    const classIndex = academicYears[yearIndex].semesters[
-      semesterIndex
-    ].classes.findIndex((c) => c.id === classId)
-
-    if (classIndex === -1) return
-
-    academicYears[yearIndex].semesters[semesterIndex].classes[
-      classIndex
-    ].isWeighted =
-      !academicYears[yearIndex].semesters[semesterIndex].classes[classIndex]
-        .isWeighted
-
-    academicYears = [...academicYears] // Trigger reactivity
-    calculateAllGPAs()
-  }
-
-  // Update class name
-  function updateClassName(semesterId: string, classId: string, name: string) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-    const classIndex = academicYears[yearIndex].semesters[
-      semesterIndex
-    ].classes.findIndex((c) => c.id === classId)
-
-    if (classIndex === -1) return
-
-    academicYears[yearIndex].semesters[semesterIndex].classes[classIndex].name =
-      name
-    calculateAllGPAs()
-  }
-
-  // Update class grade
-  function updateClassGrade(semesterId: string, classId: string, grade: Grade) {
-    const yearIndex = academicYears.findIndex((y) =>
-      y.semesters.some((s) => s.id === semesterId),
-    )
-
-    if (yearIndex === -1) return
-
-    const semesterIndex = academicYears[yearIndex].semesters.findIndex(
-      (s) => s.id === semesterId,
-    )
-    const classIndex = academicYears[yearIndex].semesters[
-      semesterIndex
-    ].classes.findIndex((c) => c.id === classId)
-
-    if (classIndex === -1) return
-
-    academicYears[yearIndex].semesters[semesterIndex].classes[
-      classIndex
-    ].grade = grade
-    calculateAllGPAs()
-  }
-
-  // Copy classes from Fall to Spring semester
-  function copyClassesToSpring(yearId: string) {
-    const yearIndex = academicYears.findIndex((y) => y.id === yearId)
-    if (yearIndex === -1) return
-
-    const fallSemester = academicYears[yearIndex].semesters[0]
-    const springSemester = academicYears[yearIndex].semesters[1]
-
-    // Create deep copies of the classes
-    const copiedClasses = fallSemester.classes.map((cls) => {
-      return {
-        ...cls,
-        id: cls.id.replace("-sem-1", "-sem-2"),
-        grade: "" as Grade, // Reset grades for the new semester
-      }
-    })
-
-    // Replace spring semester classes with copied ones
-    academicYears[yearIndex].semesters[1].classes = copiedClasses
-    academicYears = [...academicYears] // Trigger reactivity
-    calculateAllGPAs()
-  }
-
-  // Calculate cumulative GPA
-  function calculateCumulativeGPA() {
-    let totalUnweightedPoints = 0
-    let totalWeightedPoints = 0
-    let totalClasses = 0
-
-    academicYears.forEach((year) => {
-      year.semesters.forEach((semester) => {
-        const includedClasses = semester.classes.filter(
-          (c) => c.includeInGPA && c.name && c.grade,
-        )
-
-        totalClasses += includedClasses.length
-
-        totalUnweightedPoints += includedClasses.reduce(
-          (sum, c) => sum + gradePoints[c.grade],
-          0,
-        )
-
-        totalWeightedPoints += includedClasses.reduce((sum, c) => {
-          const points = gradePoints[c.grade]
-          return sum + (c.isWeighted ? points + 1.0 : points)
-        }, 0)
-      })
-    })
-
+  // Helper function to create a new empty test score
+  function createEmptyTestScore(): TestScore {
     return {
-      unweighted:
-        totalClasses > 0
-          ? (totalUnweightedPoints / totalClasses).toFixed(2)
-          : "0.00",
-      weighted:
-        totalClasses > 0
-          ? (totalWeightedPoints / totalClasses).toFixed(2)
-          : "0.00",
+      id: crypto.randomUUID(),
+      name: "",
+      score: "",
+      date: new Date().toISOString().split("T")[0],
     }
   }
 
-  // Calculate on mount and when data changes
+  // Helper function to create a new empty activity
+  function createEmptyActivity(): Activity {
+    return {
+      id: crypto.randomUUID(),
+      name: "",
+      title: "",
+      startGrade: "9",
+      endGrade: "12",
+      hoursPerWeek: 0,
+      weeksPerYear: 0,
+      description: "",
+    }
+  }
+
+  // Add a new test score
+  function addTestScore() {
+    if (!newTestScore.name || !newTestScore.score) return
+
+    if (editingTestScoreId) {
+      // Update existing test score
+      const index = testScores.findIndex((t) => t.id === editingTestScoreId)
+      if (index !== -1) {
+        testScores[index] = { ...newTestScore }
+        testScores = [...testScores]
+      }
+    } else {
+      // Add new test score
+      testScores = [...testScores, { ...newTestScore }]
+    }
+
+    // Reset form
+    resetTestScoreForm()
+  }
+
+  // Delete a test score
+  function deleteTestScore(id: string) {
+    testScores = testScores.filter((test) => test.id !== id)
+  }
+
+  // Edit a test score
+  function editTestScore(test: TestScore) {
+    newTestScore = { ...test }
+    editingTestScoreId = test.id
+    showAddTestForm = true
+  }
+
+  // Reset the test score form
+  function resetTestScoreForm() {
+    newTestScore = createEmptyTestScore()
+    editingTestScoreId = null
+    showAddTestForm = false
+  }
+
+  // Add a new activity
+  function addActivity() {
+    if (!newActivity.name) return
+
+    if (editingActivityId) {
+      // Update existing activity
+      const index = activities.findIndex((a) => a.id === editingActivityId)
+      if (index !== -1) {
+        activities[index] = { ...newActivity }
+        activities = [...activities]
+      }
+    } else {
+      // Add new activity
+      activities = [...activities, { ...newActivity }]
+    }
+
+    // Reset form
+    resetActivityForm()
+  }
+
+  // Delete an activity
+  function deleteActivity(id: string) {
+    activities = activities.filter((activity) => activity.id !== id)
+  }
+
+  // Edit an activity
+  function editActivity(activity: Activity) {
+    newActivity = { ...activity }
+    editingActivityId = activity.id
+    showAddActivityForm = true
+  }
+
+  // Reset the activity form
+  function resetActivityForm() {
+    newActivity = createEmptyActivity()
+    editingActivityId = null
+    showAddActivityForm = false
+  }
+
+  // Format grade level for display
+  function formatGradeLevel(grade: GradeLevel): string {
+    const num = parseInt(grade)
+    const suffix = num === 1 ? "st" : num === 2 ? "nd" : num === 3 ? "rd" : "th"
+    return `${num}${suffix} grade`
+  }
+
+  // Format grade range for display
+  function formatGradeRange(start: GradeLevel, end: GradeLevel): string {
+    if (start === end) {
+      return formatGradeLevel(start)
+    }
+    return `${formatGradeLevel(start)} - ${formatGradeLevel(end)}`
+  }
+
+  // Load data from localStorage on mount
   onMount(() => {
-    calculateAllGPAs()
-  })
-
-  // Track expanded/collapsed state for each year
-  let expandedYears: Record<string, boolean> = {
-    "year-9": true,
-    "year-10": false,
-    "year-11": false,
-    "year-12": false,
-  }
-
-  function toggleYearExpansion(yearId: string) {
-    expandedYears[yearId] = !expandedYears[yearId]
-    expandedYears = { ...expandedYears } // Trigger reactivity
-  }
-
-  // Save data to localStorage
-  function saveData() {
-    if (typeof localStorage !== "undefined") {
-      localStorage.setItem("academicYears", JSON.stringify(academicYears))
-      showSaveSuccess = true
-      setTimeout(() => {
-        showSaveSuccess = false
-      }, 3000)
-    }
-  }
-
-  // Load data from localStorage
-  function loadData() {
-    if (typeof localStorage !== "undefined") {
-      const savedData = localStorage.getItem("academicYears")
-      if (savedData) {
-        academicYears = JSON.parse(savedData)
-        calculateAllGPAs()
+    const savedTestScores = localStorage.getItem("userTestScores")
+    if (savedTestScores) {
+      try {
+        testScores = JSON.parse(savedTestScores)
+      } catch (e) {
+        console.error("Failed to parse saved test scores", e)
       }
     }
-  }
 
-  let showSaveSuccess = false
+    const savedActivities = localStorage.getItem("userActivities")
+    if (savedActivities) {
+      try {
+        activities = JSON.parse(savedActivities)
+      } catch (e) {
+        console.error("Failed to parse saved activities", e)
+      }
+    }
 
-  // Load saved data on mount
-  onMount(() => {
-    loadData()
+    // Save data to localStorage when they change
+    return () => {
+      localStorage.setItem("userTestScores", JSON.stringify(testScores))
+      localStorage.setItem("userActivities", JSON.stringify(activities))
+    }
   })
+
+  // Watch for changes to data and save to localStorage
+  $: {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("userTestScores", JSON.stringify(testScores))
+      localStorage.setItem("userActivities", JSON.stringify(activities))
+    }
+  }
 </script>
 
-<div class="py-6">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold">Academic Information</h1>
-    <div class="flex gap-2">
-      <button class="btn btn-primary" on:click={saveData}>
-        Save Information
-      </button>
-      {#if showSaveSuccess}
-        <div class="alert alert-success shadow-lg">
-          <div>
+<div class="container mx-auto">
+  <h1 class="text-3xl font-bold mb-6">Personal Information</h1>
+
+  <!-- Test Scores Section -->
+  <div class="mb-12">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Test Scores</h2>
+      {#if !showAddTestForm}
+        <button
+          class="btn btn-primary"
+          on:click={() => (showAddTestForm = true)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Add Test Score
+        </button>
+      {/if}
+    </div>
+
+    {#if showAddTestForm}
+      <div class="card bg-base-200 shadow-sm mb-6">
+        <div class="card-body">
+          <h3 class="card-title text-xl mb-4">
+            {editingTestScoreId ? "Edit Test Score" : "Add New Test Score"}
+          </h3>
+
+          <form on:submit|preventDefault={addTestScore} class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Test Name</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="e.g., SAT, ACT, AP Biology"
+                bind:value={newTestScore.name}
+                list="common-tests"
+                required
+              />
+              <datalist id="common-tests">
+                {#each commonTestNames as testName}
+                  <option value={testName} />
+                {/each}
+              </datalist>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Score</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="e.g., 1500, 34, 5"
+                bind:value={newTestScore.score}
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Test Date</span>
+              </label>
+              <input
+                type="date"
+                class="input input-bordered w-full"
+                bind:value={newTestScore.date}
+              />
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                class="btn btn-ghost"
+                on:click={resetTestScoreForm}
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                {editingTestScoreId ? "Update" : "Add"} Test Score
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {/if}
+
+    {#if testScores.length === 0}
+      <div class="card bg-base-200 shadow-sm">
+        <div class="card-body text-center">
+          <p class="text-lg mb-4">You haven't added any test scores yet.</p>
+          <button
+            class="btn btn-primary mx-auto"
+            on:click={() => (showAddTestForm = true)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="stroke-current flex-shrink-0 h-6 w-6"
+              class="h-5 w-5 mr-2"
               fill="none"
               viewBox="0 0 24 24"
-              ><path
+              stroke="currentColor"
+            >
+              <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              /></svg
-            >
-            <span>Information saved successfully!</span>
-          </div>
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Your First Test Score
+          </button>
         </div>
+      </div>
+    {:else}
+      <div class="overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Score</th>
+              <th>Date</th>
+              <th class="w-24">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each testScores as test (test.id)}
+              <tr>
+                <td class="font-medium">{test.name}</td>
+                <td>{test.score}</td>
+                <td>{new Date(test.date).toLocaleDateString()}</td>
+                <td>
+                  <div class="flex gap-2">
+                    <button
+                      class="btn btn-sm btn-ghost btn-square"
+                      on:click={() => editTestScore(test)}
+                      title="Edit"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-ghost btn-square text-error"
+                      on:click={() => deleteTestScore(test.id)}
+                      title="Delete"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+  </div>
+
+  <!-- Activities Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold">Activities</h2>
+      {#if !showAddActivityForm}
+        <button
+          class="btn btn-primary"
+          on:click={() => (showAddActivityForm = true)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Add Activity
+        </button>
       {/if}
     </div>
-  </div>
 
-  <div class="card bg-base-100 shadow-xl mb-8">
-    <div class="card-body">
-      <h2 class="card-title text-2xl">Cumulative GPA</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <div class="border border-primary rounded-lg p-4 bg-base-100">
-          <div class="text-lg font-medium">Unweighted GPA</div>
-          <div class="text-3xl font-bold text-primary">
-            {calculateCumulativeGPA().unweighted}
-          </div>
-          <div class="text-sm opacity-70">4.0 Scale</div>
-        </div>
-        <div class="border border-secondary rounded-lg p-4 bg-base-100">
-          <div class="text-lg font-medium">Weighted GPA</div>
-          <div class="text-3xl font-bold text-secondary">
-            {calculateCumulativeGPA().weighted}
-          </div>
-          <div class="text-sm opacity-70">5.0 Scale for Weighted Classes</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="space-y-6">
-    {#each academicYears as year (year.id)}
-      <div class="card bg-base-100 shadow-xl">
+    {#if showAddActivityForm}
+      <div class="card bg-base-200 shadow-sm mb-6">
         <div class="card-body">
-          <div
-            class="flex justify-between items-center cursor-pointer"
-            on:click={() => toggleYearExpansion(year.id)}
-          >
-            <div class="flex items-center gap-4">
-              <h2 class="card-title text-xl">{year.name}</h2>
-              <div class="border border-primary rounded-lg px-3 py-1 text-sm">
-                Unweighted: {year.yearGPA.unweighted}
+          <h3 class="card-title text-xl mb-4">
+            {editingActivityId ? "Edit Activity" : "Add New Activity"}
+          </h3>
+
+          <form on:submit|preventDefault={addActivity} class="space-y-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Activity Name</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="e.g., Debate Club, Basketball, Volunteer Work"
+                bind:value={newActivity.name}
+                required
+              />
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Title/Position</span>
+              </label>
+              <input
+                type="text"
+                class="input input-bordered w-full"
+                placeholder="e.g., President, Captain, Member"
+                bind:value={newActivity.title}
+              />
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Start Grade</span>
+                </label>
+                <select
+                  class="select select-bordered w-full"
+                  bind:value={newActivity.startGrade}
+                >
+                  {#each gradeLevelOptions as option}
+                    <option value={option.value}>{option.label}</option>
+                  {/each}
+                </select>
               </div>
-              <div class="border border-secondary rounded-lg px-3 py-1 text-sm">
-                Weighted: {year.yearGPA.weighted}
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">End Grade</span>
+                </label>
+                <select
+                  class="select select-bordered w-full"
+                  bind:value={newActivity.endGrade}
+                >
+                  {#each gradeLevelOptions as option}
+                    <option value={option.value}>{option.label}</option>
+                  {/each}
+                </select>
               </div>
             </div>
-            <button class="btn btn-sm btn-circle">
-              {#if expandedYears[year.id]}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              {:else}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              {/if}
-            </button>
-          </div>
 
-          {#if expandedYears[year.id]}
-            <div class="mt-4">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {#each year.semesters as semester, semesterIndex (semester.id)}
-                  <div class="border border-base-300 rounded-lg p-4">
-                    <div class="flex justify-between items-center mb-4">
-                      <h3 class="text-lg font-semibold">{semester.name}</h3>
-                      {#if semesterIndex === 1}
-                        <button
-                          class="btn btn-sm btn-outline"
-                          on:click={() => copyClassesToSpring(year.id)}
-                          title="Copy classes from Fall semester"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4 mr-1"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                            />
-                          </svg>
-                          Copy from Fall
-                        </button>
-                      {/if}
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Hours per Week</span>
+                </label>
+                <input
+                  type="number"
+                  class="input input-bordered w-full"
+                  bind:value={newActivity.hoursPerWeek}
+                  min="0"
+                  step="0.5"
+                />
+              </div>
 
-                    <div class="overflow-x-auto">
-                      <table class="table w-full">
-                        <thead>
-                          <tr>
-                            <th class="w-1/3">Class Name</th>
-                            <th class="w-1/5">Grade</th>
-                            <th class="w-1/6 text-center">
-                              <div
-                                class="tooltip"
-                                data-tip="Include in GPA calculation"
-                              >
-                                In GPA
-                              </div>
-                            </th>
-                            <th class="w-1/6 text-center">
-                              <div
-                                class="tooltip"
-                                data-tip="Mark as weighted (AP/Honors)"
-                              >
-                                Weighted
-                              </div>
-                            </th>
-                            <th class="w-12"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {#each semester.classes as classItem (classItem.id)}
-                            <tr>
-                              <td>
-                                <input
-                                  type="text"
-                                  class="input input-bordered w-full"
-                                  placeholder="Class Name"
-                                  value={classItem.name}
-                                  list="common-classes"
-                                  on:input={(e) =>
-                                    updateClassName(
-                                      semester.id,
-                                      classItem.id,
-                                      e.currentTarget.value,
-                                    )}
-                                />
-                              </td>
-                              <td>
-                                <select
-                                  class="select select-bordered w-full min-w-[100px]"
-                                  value={classItem.grade}
-                                  on:change={(e) =>
-                                    updateClassGrade(
-                                      semester.id,
-                                      classItem.id,
-                                      e.currentTarget.value as Grade,
-                                    )}
-                                >
-                                  <option value="">Grade</option>
-                                  <option value="A+">A+</option>
-                                  <option value="A">A</option>
-                                  <option value="A-">A-</option>
-                                  <option value="B+">B+</option>
-                                  <option value="B">B</option>
-                                  <option value="B-">B-</option>
-                                  <option value="C+">C+</option>
-                                  <option value="C">C</option>
-                                  <option value="C-">C-</option>
-                                  <option value="D+">D+</option>
-                                  <option value="D">D</option>
-                                  <option value="D-">D-</option>
-                                  <option value="F">F</option>
-                                </select>
-                              </td>
-                              <td class="text-center">
-                                <input
-                                  type="checkbox"
-                                  class="toggle toggle-primary"
-                                  checked={classItem.includeInGPA}
-                                  on:change={() =>
-                                    toggleIncludeInGPA(
-                                      semester.id,
-                                      classItem.id,
-                                    )}
-                                />
-                              </td>
-                              <td class="text-center">
-                                <input
-                                  type="checkbox"
-                                  class="toggle toggle-secondary"
-                                  checked={classItem.isWeighted}
-                                  on:change={() =>
-                                    toggleWeighted(semester.id, classItem.id)}
-                                />
-                              </td>
-                              <td>
-                                <button
-                                  class="btn btn-sm btn-ghost btn-circle"
-                                  on:click={() =>
-                                    removeClass(semester.id, classItem.id)}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-4 w-4 text-error"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </button>
-                              </td>
-                            </tr>
-                          {/each}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <div class="flex justify-between mt-4">
-                      <button
-                        class="btn btn-sm btn-outline"
-                        on:click={() => addClass(semester.id)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-4 w-4 mr-1"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        Add Class
-                      </button>
-
-                      <div class="flex gap-2">
-                        <div
-                          class="border border-primary rounded-lg px-3 py-1 text-sm"
-                        >
-                          Unweighted: {semester.unweightedGPA.toFixed(2)}
-                        </div>
-                        <div
-                          class="border border-secondary rounded-lg px-3 py-1 text-sm"
-                        >
-                          Weighted: {semester.weightedGPA.toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                {/each}
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Weeks per Year</span>
+                </label>
+                <input
+                  type="number"
+                  class="input input-bordered w-full"
+                  bind:value={newActivity.weeksPerYear}
+                  min="0"
+                  max="52"
+                  step="1"
+                />
               </div>
             </div>
-          {/if}
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Description</span>
+              </label>
+              <textarea
+                class="textarea textarea-bordered h-24"
+                placeholder="Briefly describe your involvement, achievements, or responsibilities"
+                bind:value={newActivity.description}
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+              <button
+                type="button"
+                class="btn btn-ghost"
+                on:click={resetActivityForm}
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                {editingActivityId ? "Update" : "Add"} Activity
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    {/each}
+    {/if}
+
+    {#if activities.length === 0}
+      <div class="card bg-base-200 shadow-sm">
+        <div class="card-body text-center">
+          <p class="text-lg mb-4">You haven't added any activities yet.</p>
+          <button
+            class="btn btn-primary mx-auto"
+            on:click={() => (showAddActivityForm = true)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Your First Activity
+          </button>
+        </div>
+      </div>
+    {:else}
+      <div class="space-y-4">
+        {#each activities as activity (activity.id)}
+          <div class="card bg-base-200 shadow-sm">
+            <div class="card-body">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="card-title text-xl">{activity.name}</h3>
+                  {#if activity.title}
+                    <p class="font-medium">{activity.title}</p>
+                  {/if}
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    class="btn btn-sm btn-ghost btn-square"
+                    on:click={() => editActivity(activity)}
+                    title="Edit"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-ghost btn-square text-error"
+                    on:click={() => deleteActivity(activity.id)}
+                    title="Delete"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                <div>
+                  <span class="font-semibold">Grade Levels:</span>
+                  <span
+                    >{formatGradeRange(
+                      activity.startGrade,
+                      activity.endGrade,
+                    )}</span
+                  >
+                </div>
+                <div>
+                  <span class="font-semibold">Time Commitment:</span>
+                  <span
+                    >{activity.hoursPerWeek} hours/week, {activity.weeksPerYear}
+                    weeks/year</span
+                  >
+                </div>
+                <div>
+                  <span class="font-semibold">Total Hours/Year:</span>
+                  <span
+                    >{(activity.hoursPerWeek * activity.weeksPerYear).toFixed(
+                      1,
+                    )} hours</span
+                  >
+                </div>
+              </div>
+
+              {#if activity.description}
+                <div class="mt-2">
+                  <span class="font-semibold">Description:</span>
+                  <p class="mt-1">{activity.description}</p>
+                </div>
+              {/if}
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>
-
-<datalist id="common-classes">
-  {#each commonClasses as className}
-    <option value={className} />
-  {/each}
-</datalist>
