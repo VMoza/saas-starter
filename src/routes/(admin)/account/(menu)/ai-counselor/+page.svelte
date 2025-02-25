@@ -20,6 +20,25 @@
   let result = ""
   let isLoading = false
   let error = ""
+  let includeUserInfo = true
+  let userActivities: any[] = []
+  let userTestScores: any[] = []
+
+  onMount(() => {
+    try {
+      const savedActivities = localStorage.getItem("userActivities")
+      if (savedActivities) {
+        userActivities = JSON.parse(savedActivities)
+      }
+
+      const savedTestScores = localStorage.getItem("userTestScores")
+      if (savedTestScores) {
+        userTestScores = JSON.parse(savedTestScores)
+      }
+    } catch (err) {
+      console.error("Error loading user data:", err)
+    }
+  })
 
   async function generateEssay() {
     if (!prompt || !school || !wordCount) {
@@ -41,6 +60,9 @@
           school,
           wordCount,
           existingEssay: existingEssay || undefined,
+          includeUserInfo,
+          userActivities: includeUserInfo ? userActivities : [],
+          userTestScores: includeUserInfo ? userTestScores : [],
         }),
       })
 
@@ -126,6 +148,75 @@
               max="2000"
               required
             />
+          </div>
+
+          <div class="form-control">
+            <label class="label cursor-pointer justify-start gap-4">
+              <input
+                type="checkbox"
+                bind:checked={includeUserInfo}
+                class="checkbox checkbox-primary"
+              />
+              <span class="label-text"
+                >Include my activities and test scores</span
+              >
+            </label>
+            {#if includeUserInfo && userActivities.length === 0 && userTestScores.length === 0}
+              <div class="text-sm text-warning mt-1">
+                No activities or test scores found. Please add them in the <a
+                  href="/account/information"
+                  class="link link-primary">Information</a
+                > tab.
+              </div>
+            {/if}
+
+            {#if includeUserInfo && (userActivities.length > 0 || userTestScores.length > 0)}
+              <div class="mt-2 p-3 bg-base-200 rounded-lg text-sm">
+                <div class="font-semibold mb-1">
+                  Information that will be included:
+                </div>
+
+                {#if userActivities.length > 0}
+                  <div class="mb-2">
+                    <div class="font-medium">
+                      Activities ({userActivities.length})
+                    </div>
+                    <ul class="list-disc list-inside">
+                      {#each userActivities.slice(0, 3) as activity}
+                        <li>
+                          {activity.name}{activity.title
+                            ? ` - ${activity.title}`
+                            : ""}
+                        </li>
+                      {/each}
+                      {#if userActivities.length > 3}
+                        <li class="text-base-content/70">
+                          ...and {userActivities.length - 3} more
+                        </li>
+                      {/if}
+                    </ul>
+                  </div>
+                {/if}
+
+                {#if userTestScores.length > 0}
+                  <div>
+                    <div class="font-medium">
+                      Test Scores ({userTestScores.length})
+                    </div>
+                    <ul class="list-disc list-inside">
+                      {#each userTestScores.slice(0, 3) as score}
+                        <li>{score.name}: {score.score}</li>
+                      {/each}
+                      {#if userTestScores.length > 3}
+                        <li class="text-base-content/70">
+                          ...and {userTestScores.length - 3} more
+                        </li>
+                      {/if}
+                    </ul>
+                  </div>
+                {/if}
+              </div>
+            {/if}
           </div>
 
           <div class="form-control">
