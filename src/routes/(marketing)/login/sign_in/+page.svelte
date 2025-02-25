@@ -8,6 +8,9 @@
   let { data } = $props()
   let { supabase } = data
 
+  // Get the redirectTo parameter from the URL if it exists
+  const redirectTo = $page.url.searchParams.get("redirectTo") || "/account"
+
   onMount(() => {
     supabase.auth.onAuthStateChange((event) => {
       // Redirect to account after successful login
@@ -16,7 +19,7 @@
         // Give the layout callback priority to update state or
         // we'll just bounch back to login when /account tries to load
         setTimeout(() => {
-          goto("/account")
+          goto(redirectTo)
         }, 1)
       }
     })
@@ -48,7 +51,7 @@
 <Auth
   supabaseClient={data.supabase}
   view="sign_in"
-  redirectTo={`${data.url}/auth/callback`}
+  redirectTo={`${data.url}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`}
   providers={oauthProviders}
   socialLayout="horizontal"
   showLinks={false}
@@ -59,5 +62,11 @@
   <a class="underline" href="/login/forgot_password">Forgot password?</a>
 </div>
 <div class="text-l text-slate-800 mt-3">
-  Don't have an account? <a class="underline" href="/login/sign_up">Sign up</a>.
+  Don't have an account? <a
+    class="underline"
+    href={"/login/sign_up" +
+      ($page.url.searchParams.get("redirectTo")
+        ? `?redirectTo=${encodeURIComponent(redirectTo)}`
+        : "")}>Sign up</a
+  >.
 </div>

@@ -6,44 +6,91 @@
     name: string
     freeIncluded?: boolean
     proIncluded?: boolean
+    enterpriseIncluded?: boolean
     freeString?: string
     proString?: string
+    enterpriseString?: string
     header?: boolean
   }
 
   const planFeatures: PlanFeatureRow[] = [
     {
-      name: "Section 1",
+      name: "College Information",
       header: true,
     },
     {
-      name: "Feature 1",
+      name: "College Database Access",
       freeIncluded: true,
       proIncluded: true,
+      enterpriseIncluded: true,
     },
     {
-      name: "Feature 2",
+      name: "Advanced Search Filters",
       freeIncluded: false,
       proIncluded: true,
+      enterpriseIncluded: true,
     },
     {
-      name: "Feature 3",
-      freeString: "3",
+      name: "College Saves",
+      freeString: "5",
       proString: "Unlimited",
+      enterpriseString: "Unlimited",
     },
     {
-      name: "Section 2",
+      name: "Application Support",
       header: true,
     },
     {
-      name: "Feature 4",
+      name: "Personal Profile Creation",
       freeIncluded: true,
       proIncluded: true,
+      enterpriseIncluded: true,
     },
     {
-      name: "Feature 5",
+      name: "Deadline Reminders",
       freeIncluded: false,
       proIncluded: true,
+      enterpriseIncluded: true,
+    },
+    {
+      name: "Essay Topic Suggestions",
+      freeIncluded: false,
+      proIncluded: true,
+      enterpriseIncluded: true,
+    },
+    {
+      name: "Counselor AI Agent",
+      freeString: "-",
+      proString: "30/month",
+      enterpriseString: "100/month",
+    },
+    {
+      name: "Essay Review Assistance",
+      freeIncluded: false,
+      proIncluded: false,
+      enterpriseIncluded: true,
+    },
+    {
+      name: "Premium Features",
+      header: true,
+    },
+    {
+      name: "Priority Support",
+      freeIncluded: false,
+      proIncluded: false,
+      enterpriseIncluded: true,
+    },
+    {
+      name: "Personalized College Recommendations",
+      freeIncluded: false,
+      proIncluded: false,
+      enterpriseIncluded: true,
+    },
+    {
+      name: "Application Strategy Consultation",
+      freeIncluded: false,
+      proIncluded: false,
+      enterpriseIncluded: true,
     },
   ]
 </script>
@@ -67,48 +114,57 @@
         <div class="collapse collapse-arrow join-item border border-primary">
           <input type="radio" name="faq-accordion" />
           <div class="collapse-title text-lg font-medium">
-            Is this template free to use?
-          </div>
-          <div class="collapse-content">
-            <p>Yup! This template is free to use for any project.</p>
-          </div>
-        </div>
-        <div class="collapse collapse-arrow join-item border border-primary">
-          <input type="radio" name="faq-accordion" />
-          <div class="collapse-title text-lg font-medium">
-            Why does a free template have a pricing page?
+            What's included in the Free plan?
           </div>
           <div class="collapse-content">
             <p>
-              The pricing page is part of the boilerplate. It shows how the
-              pricing page integrates into the billing portal and the Stripe
-              Checkout flows.
+              Our Free plan gives you access to basic college information,
+              limited search functionality, personal profile creation, and up to
+              5 college saves. It's perfect for getting started with Ivy Honor.
             </p>
           </div>
         </div>
         <div class="collapse collapse-arrow join-item border border-primary">
           <input type="radio" name="faq-accordion" />
           <div class="collapse-title text-lg font-medium">
-            What license is the template under?
+            What is the Counselor AI Agent?
           </div>
           <div class="collapse-content">
-            <p>The template is under the MIT license.</p>
+            <p>
+              The Counselor AI Agent is our advanced AI tool that helps you
+              write and edit your college application essays. Plus subscribers
+              get 30 essay writes/edits per month, while Pro subscribers get 100
+              per month.
+            </p>
           </div>
         </div>
         <div class="collapse collapse-arrow join-item border border-primary">
           <input type="radio" name="faq-accordion" />
           <div class="collapse-title text-lg font-medium">
-            Can I try out purchase flows without real a credit card?
+            Can I upgrade or downgrade my plan at any time?
           </div>
           <div class="collapse-content">
             <p>
-              Our demo page <a href="https://saasstarter.work" class="link"
-                >SaasStarter.work</a
-              > has a functional demo page, using Stripe's test environment.
+              Yes, you can upgrade or downgrade your plan at any time. Changes
+              will take effect immediately, and your billing will be prorated
+              accordingly.
+            </p>
+          </div>
+        </div>
+        <div class="collapse collapse-arrow join-item border border-primary">
+          <input type="radio" name="faq-accordion" />
+          <div class="collapse-title text-lg font-medium">
+            How do I cancel my subscription?
+          </div>
+          <div class="collapse-content">
+            <p>
+              You can cancel your subscription at any time from your account
+              settings. Navigate to the Billing section and click on "Manage
+              Subscription" to cancel.
             </p>
             <p class="mt-4">
-              You can use the credit card number 4242 4242 4242 4242 with any
-              future expiry date to test the payment and upgrade flows.
+              After cancellation, you'll continue to have access to your paid
+              features until the end of your current billing period.
             </p>
           </div>
         </div>
@@ -144,10 +200,10 @@
 
     <h1 class="text-2xl font-bold text-center mt-16">Plan Features</h1>
     <h2 class="text-xl text-center text-slate-500 mt-1 pb-3">
-      Example feature table
+      Compare all features across plans
     </h2>
 
-    <div class="overflow-visible mx-auto max-w-xl mt-4">
+    <div class="overflow-visible mx-auto max-w-4xl mt-4">
       <table class="table">
         <thead
           class="text-lg sticky top-0 bg-base-100 bg-opacity-50 z-10 backdrop-blur"
@@ -155,6 +211,7 @@
           <tr>
             <th></th>
             <th class="text-center">Free</th>
+            <th class="text-center">Plus</th>
             <th class="text-center">Pro</th>
           </tr>
         </thead>
@@ -162,7 +219,7 @@
           {#each planFeatures as feature}
             {#if feature.header}
               <tr class="bg-base-200 font-bold">
-                <td colspan="3">{feature.name} </td>
+                <td colspan="4">{feature.name} </td>
               </tr>
             {:else}
               <tr class="relative">
@@ -190,6 +247,25 @@
                   {#if feature.proString}
                     {feature.proString}
                   {:else if feature.proIncluded}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-8 h-8 ml-2 inline text-success"
+                    >
+                      <use href="#checkcircle" />
+                    </svg>
+                  {:else}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-[26px] h-[26px] inline text-base-200"
+                    >
+                      <use href="#nocircle" />
+                    </svg>
+                  {/if}
+                </td>
+                <td class="text-center">
+                  {#if feature.enterpriseString}
+                    {feature.enterpriseString}
+                  {:else if feature.enterpriseIncluded}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       class="w-8 h-8 ml-2 inline text-success"

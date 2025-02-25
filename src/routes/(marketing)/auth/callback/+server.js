@@ -18,10 +18,18 @@ export const GET = async ({ url, locals: { supabase } }) => {
     }
   }
 
+  // Check for redirectTo in the URL
+  const redirectTo = url.searchParams.get("redirectTo")
+  if (redirectTo) {
+    redirect(303, redirectTo)
+  }
+
+  // Legacy support for 'next' parameter
   const next = url.searchParams.get("next")
   if (next) {
     redirect(303, next)
   }
 
+  // Default redirect to account
   redirect(303, "/account")
 }

@@ -9,6 +9,58 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      colleges: {
+        Row: {
+          id: number
+          user_id: string
+          name: string
+          priority: string
+          deadline: string
+          major: string
+          application_cost: string
+          attendance_cost: string
+          application_type: string
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          user_id: string
+          name: string
+          priority: string
+          deadline: string
+          major: string
+          application_cost: string
+          attendance_cost: string
+          application_type: string
+          status: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          user_id?: string
+          name?: string
+          priority?: string
+          deadline?: string
+          major?: string
+          application_cost?: string
+          attendance_cost?: string
+          application_type?: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colleges_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       contact_requests: {
         Row: {
           company_name: string | null
