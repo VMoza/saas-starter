@@ -199,7 +199,7 @@
       </li>
       <li>
         <a
-          href="#schedule"
+          href="/#schedule"
           class="block py-2 text-lg hover:text-[#4a7fb9] transition-colors duration-300"
           on:click={closeMenu}
         >
