@@ -635,6 +635,7 @@
 </section>
 
 <!-- Team Section -->
+<!-- Commented out as requested to keep the team anonymous for now
 <section id="team" class="py-24 bg-white">
   <div class="container mx-auto px-4">
     <h2
@@ -720,12 +721,10 @@
     </div>
   </div>
 </section>
+-->
 
 <!-- Contact Form -->
-<section
-  id="schedule"
-  class="py-24 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden"
->
+<section id="schedule" class="py-24 bg-slate-50 relative overflow-hidden">
   <!-- Decorative elements -->
   <div
     class="absolute -top-20 right-0 w-72 h-72 bg-[#1e3a6e]/5 rounded-full mix-blend-multiply filter blur-xl"
