@@ -15,10 +15,10 @@ export const pricingPlans = [
     name: "Pro",
     description:
       "A plan to test the purchase experience. Try buying this with the test credit card 4242424242424242.",
-    price: "$5",
+    price: "$9.99",
     priceIntervalName: "per month",
     stripe_price_id: "price_1NkdZCHMjzZ8mGZnRSjUm4yA",
-    stripe_product_id: "prod_OXj1CcemGMWOlU",
+    stripe_product_id: "prod_RpxAMTArQqEY4v",
     features: [
       "Everything in Free",
       "Support us with fake money",

@@ -1,15 +1,38 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    %sveltekit.head%
-  </head>
-  <body
-    data-sveltekit-preload-data="hover"
-    style="min-height: 100vh; display: flex; flex-direction: column"
-  >
-    <div style="display: contents">%sveltekit.body%</div>
-  </body>
+<html lang="en" data-theme="ivyhonortheme">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Playfair Display', serif;
+    }
+  </style>
+  %sveltekit.head%
+</head>
+
+<body data-sveltekit-preload-data="hover" style="min-height: 100vh; display: flex; flex-direction: column">
+  <div style="display: contents">%sveltekit.body%</div>
+</body>
+
 </html>
