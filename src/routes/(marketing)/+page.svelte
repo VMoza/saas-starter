@@ -22,12 +22,12 @@
     {
       quote:
         "Their personalized guidance helped me secure my spot at Stanford with confidence.",
-      author: "Emma – Stanford University '27",
+      author: "Emma – Stanford University '26",
     },
     {
       quote:
         "The essay development services completely transformed my application. I got into my dream school!",
-      author: "Michael – Harvard University '26",
+      author: "Michael – Harvard University '24",
     },
     {
       quote:
@@ -38,6 +38,26 @@
       quote:
         "The strategic course planning changed my high school trajectory and made me a competitive applicant.",
       author: "James – Yale University '25",
+    },
+    {
+      quote:
+        "Ivy Honor's guidance on extracurricular development helped me stand out in a highly competitive pool.",
+      author: "Aiden – Columbia University '28",
+    },
+    {
+      quote:
+        "My interview preparation sessions gave me the confidence to excel when meeting admissions officers.",
+      author: "Maya – Brown University '23",
+    },
+    {
+      quote:
+        "The personalized attention to my application narrative made all the difference in my acceptance.",
+      author: "Ethan – Cornell University '27",
+    },
+    {
+      quote:
+        "My counselor's insights into what specific programs were looking for helped tailor my applications perfectly.",
+      author: "Olivia – UPenn '25",
     },
   ]
 
@@ -546,7 +566,6 @@
             {testimonials[currentTestimonialIndex].quote}
           </p>
           <div class="flex items-center">
-            <div class="w-12 h-12 bg-[#1e3a6e] rounded-full mr-4"></div>
             <p class="font-medium text-[#1e3a6e]">
               {testimonials[currentTestimonialIndex].author}
             </p>
@@ -625,7 +644,8 @@
         <img
           src="/images/vas-pic.jpeg"
           alt="Vasuman Moza"
-          class="w-48 h-48 object-cover rounded-full mx-auto mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300"
+          class="w-48 h-48 object-cover object-center rounded-full mx-auto mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300"
+          style="object-position: center 25%;"
         />
         <h3 class="text-2xl font-bold text-[#1e3a6e] mb-2">Vasuman Moza</h3>
         <p class="text-gray-700 mb-2 font-medium">UC Berkeley Class of 2022</p>
@@ -660,7 +680,8 @@
         <img
           src="/images/shriya-pic.jpg"
           alt="Shriya Nandwani"
-          class="w-48 h-48 object-cover rounded-full mx-auto mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300"
+          class="w-48 h-48 object-cover object-center rounded-full mx-auto mb-6 shadow-lg transform hover:scale-105 transition-transform duration-300"
+          style="object-position: center 22%; object-fit: cover; scale: 1.05;"
         />
         <h3 class="text-2xl font-bold text-[#1e3a6e] mb-2">Shriya Nandwani</h3>
         <p class="text-gray-700 mb-2 font-medium">UC Berkeley Class of 2022</p>
