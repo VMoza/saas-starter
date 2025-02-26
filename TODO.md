@@ -2,16 +2,6 @@
 
 > **Note**: This is a rough estimate of the files that need to be modified for each task. There might be additional files that need to be touched depending on the implementation details and architecture changes.
 
-## Hosting & Deployment
-0. Set up hosting for the web application
-   - Choose a hosting provider (Vercel, Netlify, AWS, DigitalOcean, etc.)
-   - Configure domain and DNS settings
-   - Set up environment variables for production
-   - Implement CI/CD pipeline for automated deployments
-   - **Files to modify**:
-     - Create new files: `.env.production`, deployment configuration files
-     - Possibly modify: `svelte.config.js`, `package.json`
-
 ## Payment & Subscription
 1. Fix the payment integration with Stripe so users can actually pay for services
    - Implement proper checkout flow

@@ -128,3 +128,187 @@ export const fetchSubscription = async ({
     hasEverHadSubscription,
   }
 }
+
+// New helper functions for subscription management
+
+/**
+ * Updates the user's subscription status in the database
+ */
+export const updateSubscriptionStatus = async ({
+  supabaseServiceRole,
+  userId,
+  subscriptionId,
+  priceId,
+  status,
+  currentPeriodEnd,
+}: {
+  supabaseServiceRole: SupabaseClient<Database>
+  userId: string
+  subscriptionId: string
+  priceId?: string
+  status: string
+  currentPeriodEnd?: Date
+}) => {
+  try {
+    const subscriptionData: any = {
+      user_id: userId,
+      stripe_subscription_id: subscriptionId,
+      status,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (priceId) {
+      subscriptionData.stripe_price_id = priceId;
+    }
+
+    if (currentPeriodEnd) {
+      subscriptionData.current_period_end = currentPeriodEnd.toISOString();
+    }
+
+    const { error } = await supabaseServiceRole
+      .from("user_subscriptions")
+      .upsert(subscriptionData);
+
+    if (error) {
+      console.error("Error updating subscription status:", error);
+      return { error };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error in updateSubscriptionStatus:", error);
+    return { error };
+  }
+}
+
+/**
+ * Cancels a user's subscription at the end of the current billing period
+ */
+export const cancelSubscription = async ({
+  subscriptionId,
+}: {
+  subscriptionId: string
+}) => {
+  try {
+    const canceledSubscription = await stripe.subscriptions.update(
+      subscriptionId,
+      { cancel_at_period_end: true }
+    );
+    
+    return { 
+      success: true, 
+      canceledSubscription 
+    };
+  } catch (error) {
+    console.error("Error canceling subscription:", error);
+    return { error };
+  }
+}
+
+/**
+ * Reactivates a subscription that was set to cancel at period end
+ */
+export const reactivateSubscription = async ({
+  subscriptionId,
+}: {
+  subscriptionId: string
+}) => {
+  try {
+    const reactivatedSubscription = await stripe.subscriptions.update(
+      subscriptionId,
+      { cancel_at_period_end: false }
+    );
+    
+    return { 
+      success: true, 
+      reactivatedSubscription 
+    };
+  } catch (error) {
+    console.error("Error reactivating subscription:", error);
+    return { error };
+  }
+}
+
+/**
+ * Changes a user's subscription to a different plan
+ */
+export const changePlan = async ({
+  subscriptionId,
+  newPriceId,
+}: {
+  subscriptionId: string
+  newPriceId: string
+}) => {
+  try {
+    const updatedSubscription = await stripe.subscriptions.update(
+      subscriptionId,
+      {
+        items: [
+          {
+            id: (await stripe.subscriptions.retrieve(subscriptionId)).items.data[0].id,
+            price: newPriceId,
+          },
+        ],
+      }
+    );
+    
+    return { 
+      success: true, 
+      updatedSubscription 
+    };
+  } catch (error) {
+    console.error("Error changing subscription plan:", error);
+    return { error };
+  }
+}
+
+/**
+ * Gets the subscription status for a user
+ */
+export const getUserSubscriptionStatus = async ({
+  supabaseServiceRole,
+  userId,
+}: {
+  supabaseServiceRole: SupabaseClient<Database>
+  userId: string
+}) => {
+  try {
+    const { data, error } = await supabaseServiceRole
+      .from("user_subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      // If no subscription found, return free plan status
+      if (error.code === "PGRST116") {
+        return { 
+          status: "free",
+          planId: "free"
+        };
+      }
+      return { error };
+    }
+
+    // Find the plan based on the price ID
+    let planId = "free";
+    if (data.stripe_price_id) {
+      const plan = pricingPlans.find(p => p.stripe_price_id === data.stripe_price_id);
+      if (plan) {
+        planId = plan.id;
+      }
+    }
+
+    return {
+      status: data.status,
+      planId,
+      subscriptionId: data.stripe_subscription_id,
+      currentPeriodEnd: data.current_period_end,
+    };
+  } catch (error) {
+    console.error("Error getting user subscription status:", error);
+    return { error };
+  }
+}

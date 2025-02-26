@@ -41,10 +41,12 @@
 
   function toggleMenu() {
     menuOpen = !menuOpen
+    console.log("Menu toggled:", menuOpen)
   }
 
   function closeMenu() {
     menuOpen = false
+    console.log("Menu closed")
   }
 </script>
 
@@ -128,9 +130,10 @@
 
       <!-- Mobile menu button -->
       <button
-        class="lg:hidden btn btn-ghost btn-circle"
+        class="lg:hidden btn btn-ghost btn-circle flex items-center justify-center"
         on:click={toggleMenu}
         aria-label="Toggle menu"
+        style="min-height: 2.5rem; height: 2.5rem; min-width: 2.5rem; width: 2.5rem;"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -138,11 +141,11 @@
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          stroke-width="2"
         >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            stroke-width="2"
             d={menuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h7"}
           />
         </svg>
@@ -160,7 +163,7 @@
   ></div>
 
   <div
-    class="fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-xl p-6"
+    class="fixed top-0 right-0 h-full w-[80%] max-w-xs bg-white z-50 shadow-xl p-6 overflow-y-auto"
     transition:fly={{ x: 300, duration: 300 }}
   >
     <div class="flex justify-between items-center mb-8">
@@ -201,7 +204,15 @@
         <a
           href="/#schedule"
           class="block py-2 text-lg hover:text-[#4a7fb9] transition-colors duration-300"
-          on:click={closeMenu}
+          on:click={() => {
+            closeMenu()
+            if (window.location.pathname === "/") {
+              const element = document.getElementById("schedule")
+              if (element) {
+                element.scrollIntoView({ behavior: "smooth" })
+              }
+            }
+          }}
         >
           Schedule Consultation
         </a>

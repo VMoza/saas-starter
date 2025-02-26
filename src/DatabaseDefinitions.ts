@@ -94,6 +94,40 @@ export interface Database {
         }
         Relationships: []
       }
+      feature_usage: {
+        Row: {
+          id: string
+          user_id: string
+          feature_type: string
+          count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          feature_type: string
+          count: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          feature_type?: string
+          count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_usage_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -154,6 +188,46 @@ export interface Database {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      user_subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_subscription_id: string | null
+          stripe_price_id: string | null
+          status: string
+          current_period_end: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          status: string
+          current_period_end?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          status?: string
+          current_period_end?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
         ]
       }
     }

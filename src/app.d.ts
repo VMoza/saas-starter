@@ -15,9 +15,21 @@ declare global {
       }>
       session: Session | null
       user: User | null
+      subscriptionInfo?: {
+        planId: 'free' | 'plus' | 'pro'
+        status: string
+        cancelAtPeriodEnd: boolean
+        currentPeriodEnd: string
+      }
     }
     interface PageData {
       session: Session | null
+      subscriptionInfo?: {
+        planId: 'free' | 'plus' | 'pro'
+        status: string
+        cancelAtPeriodEnd: boolean
+        currentPeriodEnd: string
+      }
     }
     // interface Error {}
     // interface Platform {}

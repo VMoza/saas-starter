@@ -94,4 +94,60 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event)
 }
 
-export const handle: Handle = sequence(supabase, authGuard)
+// Load subscription info for authenticated users
+const subscriptionLoader: Handle = async ({ event, resolve }) => {
+  // Only load subscription info for authenticated users
+  if (event.locals.user) {
+    try {
+      // Query the subscriptions table to get the user's subscription
+      const { data: subscription, error } = await event.locals.supabaseServiceRole
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', event.locals.user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching subscription:', error);
+        // Default to free plan if there's an error
+        event.locals.subscriptionInfo = {
+          planId: 'free',
+          status: 'active',
+          cancelAtPeriodEnd: false,
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        };
+      } else if (subscription) {
+        // Map the subscription data to the expected format
+        event.locals.subscriptionInfo = {
+          planId: subscription.price_id === 'price_plus' ? 'plus' : 
+                  subscription.price_id === 'price_pro' ? 'pro' : 'free',
+          status: subscription.status,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          currentPeriodEnd: subscription.current_period_end
+        };
+      } else {
+        // Default to free plan if no subscription is found
+        event.locals.subscriptionInfo = {
+          planId: 'free',
+          status: 'active',
+          cancelAtPeriodEnd: false,
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        };
+      }
+    } catch (error) {
+      console.error('Error in subscription loader:', error);
+      // Default to free plan if there's an error
+      event.locals.subscriptionInfo = {
+        planId: 'free',
+        status: 'active',
+        cancelAtPeriodEnd: false,
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      };
+    }
+  }
+
+  return resolve(event)
+}
+
+export const handle: Handle = sequence(supabase, authGuard, subscriptionLoader)
