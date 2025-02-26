@@ -16,7 +16,8 @@
     "cf:dev": "wrangler pages dev --local -- npm run dev",
     "cf:deploy": "npm run build && wrangler deploy",
     "db:migrate": "node src/lib/db/run-migrations.js",
-    "db:direct-migrate": "node src/lib/db/direct-migration.js"
+    "db:direct-migrate": "node src/lib/db/direct-migration.js",
+    "stripe:check": "node src/lib/stripe/check-config.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.2.0",

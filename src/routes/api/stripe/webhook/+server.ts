@@ -19,14 +19,18 @@ export const POST = async ({ request, locals }: RequestEvent) => {
   let event: Stripe.Event;
 
   try {
+    // Get the webhook secret from environment variables or use the hardcoded one
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "whsec_3UGwSNBAnGz74zs9VBtHmh0uCnuAwMaZ";
+    console.log("Using webhook secret:", webhookSecret ? "Secret is set" : "No secret found");
+    
     // Verify the event came from Stripe
-    // In production, you should set a webhook secret in your Stripe dashboard
-    // and use it here with stripe.webhooks.constructEvent(body, signature, webhookSecret)
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET || "whsec_test"
+      webhookSecret
     );
+    
+    console.log("Webhook event verified successfully:", event.type);
   } catch (err) {
     console.error(`Webhook signature verification failed: ${err}`);
     return json({ error: "Invalid signature" }, { status: 400 });
@@ -34,16 +38,20 @@ export const POST = async ({ request, locals }: RequestEvent) => {
 
   // Handle the event
   try {
+    console.log(`Processing webhook event: ${event.type}`);
+    
     switch (event.type) {
       case "checkout.session.completed":
         // Payment is successful and the subscription is created
         const checkoutSession = event.data.object as Stripe.Checkout.Session;
+        console.log("Checkout session completed:", checkoutSession.id);
         await handleCheckoutSessionCompleted(checkoutSession, supabaseServiceRole);
         break;
 
       case "customer.subscription.created":
         // Subscription created
         const subscriptionCreated = event.data.object as Stripe.Subscription;
+        console.log("Subscription created:", subscriptionCreated.id);
         await handleSubscriptionCreated(subscriptionCreated, supabaseServiceRole);
         break;
 

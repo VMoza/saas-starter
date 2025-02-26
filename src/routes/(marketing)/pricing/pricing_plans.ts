@@ -41,7 +41,7 @@ export const pricingPlans = [
     price: "$15",
     priceIntervalName: "per month",
     stripe_price_id: "price_1Nkda2HMjzZ8mGZn4sKvbDAV",
-    stripe_product_id: "prod_OXj20YNpHYOXi7",
+    stripe_product_id: "prod_RqJ5dDCwfPv1NX",
     features: [
       "Everything in Plus",
       "Priority support",
