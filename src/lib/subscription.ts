@@ -48,50 +48,57 @@ export async function getUserSubscription(
   userId: string
 ): Promise<SubscriptionInfo> {
   try {
-    const { data, error } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (error) {
-      // If no subscription found, return free plan status
-      if (error.code === 'PGRST116') {
-        return {
-          status: 'free',
-          planId: 'free',
-          isActive: true
-        };
-      }
-      console.error('Error fetching subscription:', error);
-      return {
-        status: 'free',
-        planId: 'free',
-        isActive: true
-      };
-    }
-
-    // Find the plan based on the price ID
-    let planId: SubscriptionPlan = 'free';
-    if (data.price_id) {
-      const plan = pricingPlans.find(p => p.stripe_price_id === data.price_id);
-      if (plan) {
-        planId = plan.id as SubscriptionPlan;
-      }
-    }
-
-    // Check if subscription is active
-    const isActive = ['active', 'trialing'].includes(data.status);
-
-    return {
-      status: data.status as SubscriptionStatus,
-      planId,
-      isActive,
-      subscriptionId: data.stripe_subscription_id,
-      currentPeriodEnd: data.current_period_end
+    // Default subscription info
+    const defaultSubscription: SubscriptionInfo = {
+      status: 'free',
+      planId: 'free',
+      isActive: true
     };
+    
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) {
+        // If no subscription found, return free plan status
+        if (error.code === 'PGRST116') {
+          return defaultSubscription;
+        }
+        
+        // If table doesn't exist or other error, log and return default
+        console.error('Error fetching subscription:', error);
+        return defaultSubscription;
+      }
+
+      // Find the plan based on the price ID
+      let planId: SubscriptionPlan = 'free';
+      if (data.price_id) {
+        const plan = pricingPlans.find(p => p.stripe_price_id === data.price_id);
+        if (plan) {
+          planId = plan.id as SubscriptionPlan;
+        }
+      }
+
+      // Check if subscription is active
+      const isActive = ['active', 'trialing'].includes(data.status);
+
+      return {
+        status: data.status as SubscriptionStatus,
+        planId,
+        isActive,
+        subscriptionId: data.stripe_subscription_id,
+        currentPeriodEnd: data.current_period_end
+      };
+    } catch (dbError) {
+      // Handle any unexpected errors (like table not existing)
+      console.error('Database error in getUserSubscription:', dbError);
+      return defaultSubscription;
+    }
   } catch (error) {
     console.error('Error in getUserSubscription:', error);
     return {

@@ -11,10 +11,35 @@
   // Get the redirectTo parameter from the URL if it exists
   const redirectTo = $page.url.searchParams.get("redirectTo") || "/account"
 
+  // Get error parameter if it exists
+  const error = $page.url.searchParams.get("error")
+
+  // Error messages
+  const errorMessages = {
+    session_exchange: "Error exchanging session. Please try again.",
+    unexpected: "An unexpected error occurred. Please try again.",
+  }
+
+  // Get error message
+  const errorMessage = error
+    ? errorMessages[error] || "An error occurred. Please try again."
+    : null
+
   onMount(() => {
-    supabase.auth.onAuthStateChange((event) => {
+    // Log auth state for debugging
+    console.log("Auth state on mount:", supabase.auth.getSession())
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log(
+        "Auth state changed:",
+        event,
+        session ? "Session exists" : "No session",
+      )
+
       // Redirect to account after successful login
       if (event == "SIGNED_IN") {
+        console.log("User signed in, redirecting to:", redirectTo)
+
         // Delay needed because order of callback not guaranteed.
         // Give the layout callback priority to update state or
         // we'll just bounch back to login when /account tries to load
@@ -47,6 +72,25 @@
     <span>Email verified! Please sign in.</span>
   </div>
 {/if}
+
+{#if errorMessage}
+  <div role="alert" class="alert alert-error mb-5">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="stroke-current shrink-0 h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      ><path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+      /></svg
+    >
+    <span>{errorMessage}</span>
+  </div>
+{/if}
+
 <h1 class="text-2xl font-bold mb-6">Sign In</h1>
 <Auth
   supabaseClient={data.supabase}
